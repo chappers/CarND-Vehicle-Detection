@@ -90,15 +90,18 @@ To reduce the false positive rate, and noting that all the images are to the rig
 
 #### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (somewhat wobbly or unstable bounding boxes are ok as long as you are identifying the vehicles most of the time with minimal false positives.)
 
-Here's a [link to my video result](./project_video_20170815_v2.mp4)
+Here's a [link to my video result](./project_video_20170815_v2.mp4) which only looks at the right side of the video. 
+
+Alternatively consider `project_video_20170815_v3.mp4` without that restriction
 
 
 #### 2. Describe how (and identify where in your code) you implemented some kind of filter for false positives and some method for combining overlapping bounding boxes.
 
 The filter used was the same as shown in the videos. The `apply_threshold` was applied to identify vehicle positions
 
-I recorded the positions of positive detections in each frame of the video.  From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions.  I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap.  I then assumed each blob corresponded to a vehicle.  I constructed bounding boxes to cover the area of each blob detected.  
+The previous frame was kept (see `global heat_old`). This is used to keep track of the previous frame to remove any spurious boxes from the previous frame.
 
+When doing this, we would also have to increase the threshold.
 
 
 ### Here are six frames and their corresponding heatmaps:
@@ -122,3 +125,5 @@ The final video was done via "cheating" as I know in the video the car never mov
 Further improvements could be using state of the art approaches to do object recognition such as YOLO algorithm. 
 
 It has also seemed to not handle cars coming from the other direction very well and also the barriers - we will probably have to do some more training there. My hypothesis is since the barrier in the middle is a single solid colour, that might be the pattern that is being picked up by the SVM.
+
+Related to this, the algorithm may suffer from light colored surfaces - as this was an issue which popped up in some of the previous iterations of testing out the pipeline. 
